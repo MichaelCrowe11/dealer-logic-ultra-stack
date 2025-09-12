@@ -1,0 +1,205 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  password     String
+  firstName    String
+  lastName     String
+  role         String       @default("sales")
+  active       Boolean      @default(true)
+  dealershipId String?
+  dealership   Dealership?  @relation(fields: [dealershipId], references: [id])
+  leads        Lead[]       @relation("AssignedLeads")
+  activities   Activity[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Dealership {
+  id               String         @id @default(cuid())
+  name             String
+  address          String
+  city             String
+  state            String
+  zipCode          String
+  phone            String
+  email            String
+  website          String?
+  subscriptionTier String         @default("basic")
+  active           Boolean        @default(true)
+  users            User[]
+  customers        Customer[]
+  voiceCalls       VoiceCall[]
+  analytics        Analytics[]
+  transactions     Transaction[]
+  quotes           Quote[]
+  leads            Lead[]
+  agents           Agent[]
+  events           AnalyticsEvent[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model Customer {
+  id           String       @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String?
+  phone        String
+  address      String?
+  city         String?
+  state        String?
+  zipCode      String?
+  leadSource   String?
+  status       String       @default("new")
+  dealershipId String
+  dealership   Dealership   @relation(fields: [dealershipId], references: [id])
+  leads        Lead[]
+  activities   Activity[]
+  transactions Transaction[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model VoiceCall {
+  id             String         @id @default(cuid())
+  dealershipId   String
+  dealership     Dealership     @relation(fields: [dealershipId], references: [id])
+  customerPhone  String
+  customerName   String?
+  department     String
+  priority       String         @default("medium")
+  status         String         @default("queued")
+  agentId        String?
+  agent          Agent?         @relation(fields: [agentId], references: [id])
+  notes          String?
+  queuedAt       DateTime?
+  startedAt      DateTime?
+  answeredAt     DateTime?
+  completedAt    DateTime?
+  duration       Int?
+  responseTime   Int?
+  recordingUrl   String?
+  metadata       Json?
+  transcriptions Transcription[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Agent {
+  id           String      @id @default(cuid())
+  name         String
+  email        String
+  dealershipId String
+  dealership   Dealership  @relation(fields: [dealershipId], references: [id])
+  active       Boolean     @default(true)
+  metadata     Json?
+  currentCalls VoiceCall[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@unique([name, dealershipId])
+}
+
+model Transcription {
+  id        String    @id @default(cuid())
+  callId    String
+  call      VoiceCall @relation(fields: [callId], references: [id])
+  text      String
+  summary   String?
+  sentiment String?
+  keywords  String[]
+  createdAt DateTime  @default(now())
+}
+
+model Lead {
+  id           String     @id @default(cuid())
+  customerId   String
+  customer     Customer   @relation(fields: [customerId], references: [id])
+  dealershipId String
+  dealership   Dealership @relation(fields: [dealershipId], references: [id])
+  assignedTo   String?
+  assignedUser User?      @relation("AssignedLeads", fields: [assignedTo], references: [id])
+  source       String?
+  status       String     @default("new")
+  value        Float?
+  notes        String?
+  activities   Activity[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Activity {
+  id          String    @id @default(cuid())
+  customerId  String
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  leadId      String?
+  lead        Lead?     @relation(fields: [leadId], references: [id])
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id])
+  type        String
+  notes       String?
+  scheduledFor DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+}
+
+model Analytics {
+  id             String     @id @default(cuid())
+  dealershipId   String
+  dealership     Dealership @relation(fields: [dealershipId], references: [id])
+  date           DateTime
+  totalCalls     Int        @default(0)
+  answeredCalls  Int        @default(0)
+  missedCalls    Int        @default(0)
+  callDuration   Float      @default(0)
+  responseTime   Float      @default(0)
+  revenue        Float      @default(0)
+  conversionRate Float      @default(0)
+  createdAt      DateTime   @default(now())
+
+  @@unique([dealershipId, date])
+}
+
+model Transaction {
+  id           String     @id @default(cuid())
+  dealershipId String
+  dealership   Dealership @relation(fields: [dealershipId], references: [id])
+  customerId   String?
+  customer     Customer?  @relation(fields: [customerId], references: [id])
+  type         String
+  amount       Float
+  description  String?
+  createdAt    DateTime   @default(now())
+}
+
+model Quote {
+  id           String     @id @default(cuid())
+  dealershipId String
+  dealership   Dealership @relation(fields: [dealershipId], references: [id])
+  tier         String
+  addons       String[]
+  notes        String?
+  amount       Float
+  validUntil   DateTime
+  accepted     Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+}
+
+model AnalyticsEvent {
+  id           String     @id @default(cuid())
+  dealershipId String
+  dealership   Dealership @relation(fields: [dealershipId], references: [id])
+  event        String
+  properties   Json?
+  timestamp    DateTime
+  createdAt    DateTime   @default(now())
+}
