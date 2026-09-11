@@ -1,244 +1,48 @@
 # Dealer Logic Ultra Stack
 
-Complete Automotive Dealership Intelligence Platform - A modern, full-stack solution for automotive dealerships featuring AI-powered voice assistance, real-time analytics, and comprehensive CRM capabilities.
+Express backend and Prisma schema for an automotive dealership call and CRM service, with a sync script for ElevenLabs conversational agents.
 
-## Features
+## Status
 
-- **AI Voice Assistant**: Intelligent voice call handling and routing
-- **Real-time Analytics**: Live dashboards and performance metrics
-- **CRM Integration**: Complete customer relationship management
-- **ROI Calculator**: Financial analysis and projections
-- **Pricing Tiers**: Flexible subscription models
-- **WebSocket Support**: Real-time updates and notifications
+`archived`
 
-## Tech Stack
+One commit, dated 2025-09-11 (git log). Development stopped there. The only later activity is a Dependabot pull request from 2025-10-29, left open. The code is kept for reference.
 
-### Backend
-- Node.js + Express
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- Socket.io
-- JWT Authentication
-- Winston Logging
+## Install and first run
 
-### Frontend
-- Next.js 15
-- React 19
-- TailwindCSS
-- Radix UI Components
-- Framer Motion
-- Zustand State Management
-- React Query
+Not maintained. No supported install path.
 
-## Getting Started
+Not run today: `npm ci`. The lockfile lists 1022 packages, over the estate disk cap of about 800, so nothing was installed. That also rules out `tsc -p tsconfig.backend.json`, `next build`, `jest` and `prisma migrate`, which all need `node_modules`.
 
-### Prerequisites
-- Node.js 18+
-- PostgreSQL database
-- Redis (optional, for caching)
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd dealer-logic-ultra-stack
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up environment variables:
-```bash
-cp .env.example .env
-```
-
-4. Configure your database in `.env`:
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/dealer_logic"
-JWT_SECRET="your-secret-key"
-JWT_REFRESH_SECRET="your-refresh-secret"
-SESSION_SECRET="your-session-secret"
-FRONTEND_URL="http://localhost:3001"
-```
-
-5. Run database migrations:
-```bash
-npx prisma migrate dev
-```
-
-6. Seed the database (optional):
-```bash
-npm run seed
-```
-
-### Development
-
-Run both backend and frontend in development mode:
-```bash
-npm run dev
-```
-
-Or run them separately:
-```bash
-# Backend (port 3000)
-npm run dev:backend
-
-# Frontend (port 3001)
-npm run dev:frontend
-```
-
-### Production Build
-
-```bash
-# Build everything
-npm run build
-
-# Start production server
-npm start
-```
-
-### Docker Deployment
-
-```bash
-# Build Docker image
-npm run docker:build
-
-# Run container
-npm run docker:run
-```
-
-## ElevenLabs/ConvAI Integration
-
-This project includes built-in integration with ElevenLabs and ConvAI for voice agent management:
-
-### Sync Agents
-```bash
-# Sync all Dealer Logic agents from ConvAI
-npm run sync-agents
-```
-
-### ElevenLabs API Endpoints
-- `POST /api/elevenlabs/sync-agents` - Sync agents from ConvAI/ElevenLabs
-- `GET /api/elevenlabs/agents` - List all synced agents
-- `GET /api/elevenlabs/agents/:id` - Get agent details
-- `POST /api/elevenlabs/agents/:id/deploy` - Deploy agent to ElevenLabs
-- `GET /api/elevenlabs/agents/:id/conversations` - Get agent conversation history
-- `GET /api/elevenlabs/agents/:id/metrics` - Get agent performance metrics
-- `GET /api/elevenlabs/voices` - List available voices
-- `POST /api/elevenlabs/agents/:id/test-voice` - Test agent voice
-
-## API Documentation
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `POST /api/auth/refresh` - Refresh access token
-
-### Dealerships
-- `GET /api/dealerships` - List all dealerships
-- `GET /api/dealerships/:id` - Get dealership details
-- `POST /api/dealerships` - Create dealership (admin)
-- `PUT /api/dealerships/:id` - Update dealership (admin)
-- `DELETE /api/dealerships/:id` - Delete dealership (admin)
-
-### Voice Calls
-- `GET /api/voice/calls` - List voice calls
-- `POST /api/voice/calls` - Create new call
-- `PUT /api/voice/calls/:id/status` - Update call status
-- `GET /api/voice/agents` - List available agents
-
-### Analytics
-- `GET /api/analytics/dashboard/:dealershipId` - Dashboard metrics
-- `GET /api/analytics/reports/:dealershipId` - Generate reports
-
-### CRM
-- `GET /api/crm/customers` - List customers
-- `POST /api/crm/customers` - Create customer
-- `GET /api/crm/leads` - List leads
-- `POST /api/crm/leads` - Create lead
-- `GET /api/crm/pipeline/:dealershipId` - Sales pipeline
-
-### Pricing & ROI
-- `GET /api/pricing/tiers` - Available pricing tiers
-- `GET /api/pricing/calculator` - Price calculator
-- `GET /api/roi/calculate/:dealershipId` - Calculate ROI
-- `GET /api/roi/projections/:dealershipId` - ROI projections
-
-## WebSocket Events
-
-The application uses Socket.io for real-time communication:
-
-### Client Events
-- `join_dealership` - Join dealership room
-- `voice_call_status` - Update call status
-- `analytics_update` - Send analytics data
-
-### Server Events
-- `call_update` - Receive call updates
-- `analytics_data` - Receive analytics updates
-
-## Project Structure
+What did run today (Node v26.5.0), a syntax check only:
 
 ```
-dealer-logic-ultra-stack/
-├── src/
-│   ├── backend/
-│   │   ├── api/          # API route handlers
-│   │   ├── config/       # Configuration files
-│   │   ├── database/     # Database connection
-│   │   ├── middleware/   # Express middleware
-│   │   ├── models/       # Data models
-│   │   ├── services/     # Business logic
-│   │   └── server.ts     # Express server
-│   ├── frontend/
-│   │   ├── components/   # React components
-│   │   ├── pages/        # Next.js pages
-│   │   └── styles/       # CSS styles
-│   ├── lib/              # Shared libraries
-│   ├── shared/           # Shared types
-│   └── utils/            # Utility functions
-├── prisma/
-│   └── schema.prisma     # Database schema
-├── public/               # Static assets
-└── package.json
+$ node --check scripts/sync-agents.js && node --check scripts/test-agent-sync.js && node --check next.config.js && node --check tailwind.config.js && echo "syntax ok: 4 files"
+syntax ok: 4 files
 ```
 
-## Testing
+## What runs today
 
-Run tests with coverage:
-```bash
-npm test
-```
+Nothing is maintained. For reference, the repo contains:
 
-## Linting
+- `src/backend/server.ts`: an Express 5 app with helmet, a rate limiter, sessions, Socket.io, a `/health` route, and routers under `/api/auth`, `/api/dealerships`, `/api/voice`, `/api/analytics`, `/api/pricing`, `/api/roi`, `/api/crm`, `/api/elevenlabs` and `/api/webhooks`.
+- `prisma/schema.prisma`: 12 PostgreSQL models (User, Dealership, Customer, VoiceCall, Agent, Transcription, Lead, Activity, Analytics, Transaction, Quote, AnalyticsEvent).
+- `src/backend/services/convai-sync.service.ts`: shells out to a `convai` command line tool (`convai agent list --json`, `convai agent deploy`) and calls the ElevenLabs voices API. It falls back to `../agents.json` and `../agent_configs`, which are not in this repo.
+- `src/frontend/components/pricing/roi-calculator.tsx`: one React component. There is no `app/` or `pages/` directory, so `next build` has no site to produce.
+- No test files. `npm test` runs jest against nothing.
 
-Check code quality:
-```bash
-npm run lint
-```
+## Limits
 
-Type checking:
-```bash
-npm run typecheck
-```
+- The tier prices in `src/backend/api/pricing.ts` and `src/frontend/components/pricing/roi-calculator.tsx` (299, 799 and 2499 a month) are placeholders typed into the code. Nothing here is for sale at those prices.
+- The ROI formula in `roi-calculator.tsx` (85 percent of missed calls recovered, 30 percent staff saving, a five year multiple) and the 10 percent annual discount in `pricing.ts` are placeholders. No measurement backs them. Do not quote them.
+- `src/backend/api/roi.ts` projects revenue with a fixed 30 percent cost ratio and a 5 percent default growth rate. Also placeholders.
+- `npm start` runs `dist/server/index.js`, but the backend build writes to `dist/backend/`. `npm run migrate` and `npm run seed` point at files with no source. `npm run docker:build` needs a Dockerfile that is not in the repo.
+- JWT and session secrets fall back to fixed strings (`your-jwt-secret`, `your-session-secret`) when the env vars are unset. Do not deploy as is.
+- `.env.example` lists keys for Vapi, Twilio, HubSpot, Salesforce, Pipedrive, Zoho, SendGrid, Stripe, AWS and Mixpanel. The code reads none of them. Only `ELEVENLABS_API_KEY`, the database, JWT, session, Redis, port and logging variables are read (grep of `process.env`). The CRM names appear only as enum values in `src/shared/types/index.ts`.
+- Not a dealership management system. Makes no claim about call recovery, compliance, or telephony law.
 
-## Contributing
+## License and contact
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+No license file. `package.json` declares `UNLICENSED`, so no rights are granted.
 
-## License
-
-This project is proprietary and confidential.
-
-## Support
-
-For support, email support@dealerlogic.com or join our Slack channel.
+Contact: michael@crowelogic.com
